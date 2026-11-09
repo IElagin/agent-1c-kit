@@ -51,6 +51,18 @@ if (Has "git") {
 } else { Line "git" "НЕТ" "" }
 Line "YAxUnit" "?" "проверяется выгрузкой: dump.ps1 -Extension YAXUNIT -To tmp\yaxunit"
 
+"== Конфигурация (часть 3)"
+if ($ConfigDump) {
+  Line "configDump" $(if (Test-Path $ConfigDump) { "ЕСТЬ" } else { "НЕТ" }) $ConfigDump
+  $cx = Join-Path $ConfigDump "xml\Configuration.xml"
+  Line "Выгрузка конфигурации" $(if (Test-Path $cx) { "ЕСТЬ" } else { "НЕТ" }) $cx
+  $mp = Join-Path $ConfigDump "map.txt"
+  if (Test-Path $mp) { Line "Карта объектов" "ЕСТЬ" "$mp, $((Get-Content $mp -TotalCount 1 -Encoding UTF8) -replace '^# ', '')" }
+  else { Line "Карта объектов" "НЕТ" $mp }
+} else { Line "configDump" "НЕТ" "не задан — нужен для части 3 (setup/3-config.md)" }
+if (Has "rg") { Line "ripgrep (rg)" "ЕСТЬ" (First "rg" @("--version")) }
+else { Line "ripgrep (rg)" "НЕТ" "искать по выгрузке можно инструментом поиска агента или Select-String" }
+
 "== Путь «Свои инструменты»"
 if ($BslLsExe) {
   Line "BSL Language Server" $(if (Test-Path $BslLsExe) { "ЕСТЬ" } else { "НЕТ" }) $BslLsExe

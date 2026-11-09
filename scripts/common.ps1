@@ -34,6 +34,9 @@ $V8Password = Get-Setting "v8Password"
 $BaseCopy = Get-Setting "baseCopy"
 $BuildBase = Get-Setting "buildBase"
 $BslLsExe = Get-Setting "bslLsExe"
+# Общая выгрузка конфигурации базы (часть 3): одна на конфигурацию для всех
+# обработок по ней, лежит вне папки проекта. Пишет туда только dump-config.ps1.
+$ConfigDump = Get-Setting "configDump"
 
 # Start-Process не берёт аргументы в кавычки сам: путь с пробелом или имя
 # пользователя без кавычек разваливаются на несколько аргументов.
