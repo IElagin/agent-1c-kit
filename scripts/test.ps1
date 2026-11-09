@@ -5,7 +5,7 @@
 # Относительные пути в xUnitParams.json YAxUnit считает от текущей папки,
 # а не от JSON: без этой строки junit.xml и exitcode.txt лягут в чужую папку.
 Set-Location $PSScriptRoot
-Need-Env @("V8_EXE", "V8_USER", "V8_BASE_COPY")
+Need-Settings @("v8Exe", "v8User", "baseCopy")
 $epf = "$PSScriptRoot\out\Обработка.epf"
 if (-not (Test-Path $epf)) { "ОШИБКА: нет out\Обработка.epf — сначала build.ps1"; exit 2 }
 # Тест открывает обработку из каталога временных файлов под тем же именем:
@@ -15,14 +15,14 @@ Copy-Item $epf "$env:TEMP\Обработка.epf" -Force
 Remove-Item "exitcode.txt", "junit.xml", "yaxunit.log" -ErrorAction SilentlyContinue
 $cfg = "$PSScriptRoot\xUnitParams.json"
 # /L ru: клиент 8.3.20 без него запустился по-английски, YAxUnit не нашёл ни одного теста.
-$a = @("ENTERPRISE", "/F", (Q $env:V8_BASE_COPY)) + @(Auth) + @("/DisableStartupDialogs",
+$a = @("ENTERPRISE", "/F", (Q $BaseCopy)) + @(Auth) + @("/DisableStartupDialogs",
   "/DisableStartupMessages", "/L", "ru", "/VLru_RU", "/C", (Q "RunUnitTests=$cfg"))
-$min = if ($env:V8_TEST_TIMEOUT_MIN) { [int]$env:V8_TEST_TIMEOUT_MIN } else { 10 }
-# Если yaxunit.log не появился за V8_TEST_START_MIN минут (по умолчанию 3), клиент
+$min = if (Get-Setting "testTimeoutMin") { [int](Get-Setting "testTimeoutMin") } else { 10 }
+# Если yaxunit.log не появился за testStartMin минут (по умолчанию 3), клиент
 # не дошёл до тестов: обычно ждёт человека в окне, которого может не быть на экране.
-$startMin = if ($env:V8_TEST_START_MIN) { [int]$env:V8_TEST_START_MIN } else { 3 }
+$startMin = if (Get-Setting "testStartMin") { [int](Get-Setting "testStartMin") } else { 3 }
 $t0 = Get-Date
-$p = Start-Process -FilePath $env:V8_EXE -ArgumentList $a -PassThru; $null = $p.Handle
+$p = Start-Process -FilePath $V8Exe -ArgumentList $a -PassThru; $null = $p.Handle
 $state = "done"; $logAt = $null
 while (-not $p.WaitForExit(5000)) {
   $el = ((Get-Date) - $t0).TotalMinutes

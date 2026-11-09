@@ -3,11 +3,11 @@
 # хотя загрузка «прошла».
 . "$PSScriptRoot\common.ps1"
 Set-Location $PSScriptRoot
-Need-Env @("V8_EXE", "V8_USER", "V8_BASE_COPY")
+Need-Settings @("v8Exe", "v8User", "baseCopy")
 $ext = "ТестыОбработки"   # то же имя, что в xUnitParams.json -> filter.extensions
 if (-not (Test-Path "$PSScriptRoot\tests\Configuration.xml")) { "ОШИБКА: нет tests\Configuration.xml"; exit 2 }
 $log = "$PSScriptRoot\build-tests.log"; $res = "$PSScriptRoot\build-tests.res"
-$base = @("DESIGNER", "/F", (Q $env:V8_BASE_COPY)) + @(Auth) + @("/DisableStartupDialogs", "/DisableStartupMessages")
+$base = @("DESIGNER", "/F", (Q $BaseCopy)) + @(Auth) + @("/DisableStartupDialogs", "/DisableStartupMessages")
 
 foreach ($step in @(
     @("Загрузка", @("/LoadConfigFromFiles", (Q "$PSScriptRoot\tests"), "-Extension", (Q $ext))),

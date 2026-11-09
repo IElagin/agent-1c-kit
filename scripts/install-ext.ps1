@@ -4,12 +4,12 @@
 param([string]$Cfe, [string]$Name)
 . "$PSScriptRoot\common.ps1"
 Set-Location $PSScriptRoot
-Need-Env @("V8_EXE", "V8_USER", "V8_BASE_COPY")
+Need-Settings @("v8Exe", "v8User", "baseCopy")
 if (-not $Cfe -or -not $Name) { "Использование: .\install-ext.ps1 -Cfe <файл.cfe> -Name <имя расширения>"; exit 2 }
 if (-not (Test-Path $Cfe)) { "ОШИБКА: нет файла $Cfe"; exit 2 }
 $cfePath = (Resolve-Path $Cfe).Path
 $log = "$PSScriptRoot\install-ext.log"; $res = "$PSScriptRoot\install-ext.res"
-$base = @("DESIGNER", "/F", (Q $env:V8_BASE_COPY)) + @(Auth) + @("/DisableStartupDialogs", "/DisableStartupMessages")
+$base = @("DESIGNER", "/F", (Q $BaseCopy)) + @(Auth) + @("/DisableStartupDialogs", "/DisableStartupMessages")
 
 foreach ($step in @(
     @("Загрузка", @("/LoadCfg", (Q $cfePath), "-Extension", (Q $Name))),

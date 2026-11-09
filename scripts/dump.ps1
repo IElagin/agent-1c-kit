@@ -4,7 +4,7 @@
 param([string]$Epf, [string]$Extension, [string]$To)
 . "$PSScriptRoot\common.ps1"
 Set-Location $PSScriptRoot
-Need-Env @("V8_EXE", "V8_USER", "V8_BASE_COPY")
+Need-Settings @("v8Exe", "v8User", "baseCopy")
 $log = "$PSScriptRoot\dump.log"; $res = "$PSScriptRoot\dump.res"
 Remove-Item $log, $res -ErrorAction SilentlyContinue
 $common = @("/DisableStartupDialogs", "/DisableStartupMessages")
@@ -29,7 +29,7 @@ if ($Extension) {
   $dir = Join-Path $PSScriptRoot $To
   if ((Test-Path $dir) -and (Get-ChildItem $dir -Force | Select-Object -First 1)) { "ОШИБКА: каталог $To не пустой"; exit 2 }
   New-Item -ItemType Directory -Force $dir | Out-Null
-  $a = @("DESIGNER", "/F", (Q $env:V8_BASE_COPY)) + @(Auth) + $common + @(
+  $a = @("DESIGNER", "/F", (Q $BaseCopy)) + @(Auth) + $common + @(
     "/DumpConfigToFiles", (Q $dir), "-Extension", (Q $Extension), "/Out", (Q $log), "/DumpResult", (Q $res))
   $code = Invoke-1C $a
   # У выгрузки конфигурации и расширения журнал бывает пустым и при успехе:

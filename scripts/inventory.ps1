@@ -23,25 +23,27 @@ foreach ($root in @("$env:ProgramFiles\1cv8", "${env:ProgramFiles(x86)}\1cv8")) 
       $e = Join-Path $_.FullName "bin\1cv8.exe"; if (Test-Path $e) { $plats += $e } }
   }
 }
-if ($env:V8_EXE -and (Test-Path $env:V8_EXE) -and ($plats -notcontains $env:V8_EXE)) { $plats += $env:V8_EXE }
-if ($plats.Count -eq 0) { Line "Платформа 1С" "НЕТ" "в Program Files не найдена, V8_EXE не задана" }
+if ($V8Exe -and (Test-Path $V8Exe) -and ($plats -notcontains $V8Exe)) { $plats += $V8Exe }
+if ($plats.Count -eq 0) { Line "Платформа 1С" "НЕТ" "в Program Files не найдена, v8Exe в settings.json не задан" }
 foreach ($p in $plats) {
   $v = (Get-Item $p).VersionInfo.FileVersion
   $mark = if ($v -like "8.3.27.*") { "(8.3.27 — подходит для Unica)" } else { "" }
   Line "Платформа 1С" "ЕСТЬ" "$v $p $mark"
 }
-if ($env:V8_EXE) {
-  $ok = Test-Path $env:V8_EXE
-  Line "V8_EXE" $(if ($ok) { "ЕСТЬ" } else { "НЕТ" }) "$env:V8_EXE$(if (-not $ok) { ' — файла нет' })"
-  $hbk = Join-Path (Split-Path $env:V8_EXE) "shcntx_ru.hbk"
+if ($SettingsError) { Line "settings.json" "ОШИБКА" "не читается как JSON: $SettingsError" }
+elseif (-not $Settings) { Line "settings.json" "НЕТ" "файла нет — заполни по setup/1-machine.md, шаг 1.1" }
+if ($V8Exe) {
+  $ok = Test-Path $V8Exe
+  Line "v8Exe" $(if ($ok) { "ЕСТЬ" } else { "НЕТ" }) "$V8Exe$(if (-not $ok) { ' — файла нет' })"
+  $hbk = Join-Path (Split-Path $V8Exe) "shcntx_ru.hbk"
   Line "Справка платформы" $(if (Test-Path $hbk) { "ЕСТЬ" } else { "НЕТ" }) $hbk
-} else { Line "V8_EXE" "НЕТ" "не задана" }
-Line "V8_USER" $(if ($env:V8_USER) { "ЕСТЬ" } else { "НЕТ" }) "$env:V8_USER"
-Line "V8_PASSWORD" $(if ($env:V8_PASSWORD) { "ЕСТЬ" } else { "—" }) "(значение не печатается)"
-if ($env:V8_BASE_COPY) {
-  $ok = Test-Path (Join-Path $env:V8_BASE_COPY "1Cv8.1CD")
-  Line "V8_BASE_COPY" $(if ($ok) { "ЕСТЬ" } else { "НЕТ" }) "$env:V8_BASE_COPY$(if (-not $ok) { ' — нет 1Cv8.1CD' })"
-} else { Line "V8_BASE_COPY" "НЕТ" "не задана" }
+} else { Line "v8Exe" "НЕТ" "не задан" }
+Line "v8User" $(if ($V8User) { "ЕСТЬ" } else { "НЕТ" }) "$V8User"
+Line "v8Password" $(if ($V8Password) { "ЕСТЬ" } else { "—" }) "(значение не печатается)"
+if ($BaseCopy) {
+  $ok = Test-Path (Join-Path $BaseCopy "1Cv8.1CD")
+  Line "baseCopy" $(if ($ok) { "ЕСТЬ" } else { "НЕТ" }) "$BaseCopy$(if (-not $ok) { ' — нет 1Cv8.1CD' })"
+} else { Line "baseCopy" "НЕТ" "не задан" }
 if (Has "git") {
   Line "git" "ЕСТЬ" (First "git" @("--version"))
   $un = (& git config user.name 2>$null); $ue = (& git config user.email 2>$null)
@@ -50,9 +52,9 @@ if (Has "git") {
 Line "YAxUnit" "?" "проверяется выгрузкой: dump.ps1 -Extension YAXUNIT -To tmp\yaxunit"
 
 "== Путь «Свои инструменты»"
-if ($env:BSLLS_EXE) {
-  Line "BSL Language Server" $(if (Test-Path $env:BSLLS_EXE) { "ЕСТЬ" } else { "НЕТ" }) $env:BSLLS_EXE
-} else { Line "BSL Language Server" "НЕТ" "BSLLS_EXE не задана" }
+if ($BslLsExe) {
+  Line "BSL Language Server" $(if (Test-Path $BslLsExe) { "ЕСТЬ" } else { "НЕТ" }) $BslLsExe
+} else { Line "BSL Language Server" "НЕТ" "bslLsExe в settings.json не задан" }
 if (Has "java") { Line "Java" "ЕСТЬ" (First "java" @("-version")) } else { Line "Java" "НЕТ" "нужна только для BSL LS в виде .jar" }
 
 "== Сервер справки (путь «Свои инструменты»), агент и Unica (путь «Unica»)"

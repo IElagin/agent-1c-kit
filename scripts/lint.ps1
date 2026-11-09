@@ -2,8 +2,8 @@
 # Итог — строка «Замечаний: N». Если есть lint-baseline.txt, замечаний не должно стать больше.
 . "$PSScriptRoot\common.ps1"
 Set-Location $PSScriptRoot
-Need-Env @("BSLLS_EXE")
-if (-not (Test-Path $env:BSLLS_EXE)) { "ОШИБКА: нет файла BSLLS_EXE = $env:BSLLS_EXE"; exit 2 }
+Need-Settings @("bslLsExe")
+if (-not (Test-Path $BslLsExe)) { "ОШИБКА: нет файла bslLsExe = $BslLsExe"; exit 2 }
 # Без UTF-8 для Java русские сообщения превращаются в кракозябры.
 $env:JAVA_TOOL_OPTIONS = "-Dfile.encoding=UTF-8"
 # Каталог отчёта создаём сами: BSL LS 1.0.7 его не создаёт, Java падает,
@@ -14,8 +14,8 @@ Remove-Item $rep -ErrorAction SilentlyContinue
 $args_ = @("analyze", "-s", "src", "-o", "lint", "-r", "json", "-c", "bsl-ls.json", "-q")
 # Вывод BSL LS (предупреждения Java «Picked up JAVA_TOOL_OPTIONS», WARNING) — не замечания:
 # прячем его и показываем, только если отчёта нет.
-if ($env:BSLLS_EXE -like "*.jar") { $out = & java -jar $env:BSLLS_EXE @args_ 2>&1 }
-else { $out = & $env:BSLLS_EXE @args_ 2>&1 }
+if ($BslLsExe -like "*.jar") { $out = & java -jar $BslLsExe @args_ 2>&1 }
+else { $out = & $BslLsExe @args_ 2>&1 }
 if (-not (Test-Path $rep)) {
   "ОШИБКА: BSL LS не записал отчёт lint\bsl-json.json. Это не «0 замечаний». Вывод BSL LS:"
   $out | ForEach-Object { "$_" }; exit 2

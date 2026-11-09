@@ -1,7 +1,7 @@
 ﻿# build.ps1 — сборка внешней обработки src\Обработка.xml -> out\Обработка.epf (шаг 5 статьи).
 . "$PSScriptRoot\common.ps1"
 Set-Location $PSScriptRoot
-Need-Env @("V8_EXE", "V8_USER", "V8_BASE_COPY")
+Need-Settings @("v8Exe", "v8User", "baseCopy")
 $root = "$PSScriptRoot\src\Обработка.xml"
 if (-not (Test-Path $root)) { "ОШИБКА: нет src\Обработка.xml — сначала выгрузка (dump.ps1)"; exit 2 }
 New-Item -ItemType Directory -Force out | Out-Null
