@@ -1,0 +1,8 @@
+{
+  "reportFormat": "jUnit",
+  "reportPath": "junit.xml",
+  "closeAfterTests": true,
+  "exitCode": "exitcode.txt",
+  "logging": { "file": "yaxunit.log", "console": false, "level": "info" },
+  "filter": { "extensions": ["ТестыОбработки"] }
+}
